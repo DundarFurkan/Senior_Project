@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">1079511647505-ep3pii1mnr4vse8rbq97juscopr72tpr.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://seniorproject-be83e.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">1079511647505</string>
+    <string name="google_api_key" translatable="false">AIzaSyD2tPC4gnU-8TxshIUpH45lSpWeYzVzFRw</string>
+    <string name="google_app_id" translatable="false">1:1079511647505:android:159f6b88e21cf7b8</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyD2tPC4gnU-8TxshIUpH45lSpWeYzVzFRw</string>
+    <string name="google_storage_bucket" translatable="false">seniorproject-be83e.appspot.com</string>
+    <string name="project_id" translatable="false">seniorproject-be83e</string>
+</resources>
