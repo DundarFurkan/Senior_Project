@@ -1,0 +1,85 @@
+#include <SoftwareSerial.h>  
+#define ag_ismi "furkan100" //kablosuz aðýnýzýn adýný buraya girin
+#define ag_sifresi "12345678" //kablosuz aðýnýzýn þifresini buraya girin
+#define IP "seniorprojectandroid.tk" //ornek.com þeklinde alan adýnýzý girin
+#include "DHT.h"
+#define DHTPIN 6 //DHT pinini 2.pine baðladýk
+#define DHTTYPE DHT11 //DHT22 kullanacaðýmýzý belirttik 
+DHT dht(DHTPIN, DHTTYPE); //DHT sensörü tanýmlýyoruz
+String agAdi = "furkan101";                 //Aðýmýzýn adýný buraya yazýyoruz.    
+String agSifresi = "12345678";           //Aðýmýzýn þifresini buraya yazýyoruz.
+int rxPin = 10;                                               //ESP8266 RX pini
+int txPin = 11;   
+SoftwareSerial esp(rxPin, txPin);
+
+void setup() {
+dht.begin(); //DHT sensörü baþlattýk
+ Serial.begin(9600);  //Seri port ile haberleþmemizi baþlatýyoruz.
+  Serial.println("Started");
+  esp.begin(115200);                                          //ESP8266 ile seri haberleþmeyi baþlatýyoruz.
+  esp.println("AT");                                          //AT komutu ile modül kontrolünü yapýyoruz.
+  while(!esp.find("OK")){                                     //Modül hazýr olana kadar bekliyoruz.
+    esp.println("AT");
+    Serial.println("ESP8266 Bulunamadý.");
+  }
+  Serial.println("OK Komutu Alýndý");
+  esp.println("AT+CWMODE=1");                                 //ESP8266 modülünü client olarak ayarlýyoruz.
+  while(!esp.find("OK")){                                     //Ayar yapýlana kadar bekliyoruz.
+    esp.println("AT+CWMODE=1");
+    Serial.println("Ayar Yapýlýyor....");
+  }
+  Serial.println("Aga Baglaniliyor...");
+  esp.println("AT+CWJAP=\""+agAdi+"\",\""+agSifresi+"\"");    //Aðýmýza baðlanýyoruz.
+  while(!esp.find("OK"));                                     //Aða baðlanana kadar bekliyoruz.
+  Serial.println("Aga Baglandi.");
+  delay(1000);
+}
+
+void loop() {
+float n = dht.readHumidity(); //DHT den nem deðerini okuyoruz
+float s = dht.readTemperature(); //DHT den sýcaklýk deðerini okuyoruz
+Serial.print("Hava Sicakligi: "); //Ekrana yazdýrýyoruz.
+Serial.println(s); 
+Serial.print("Nem Orani: ");
+Serial.println(n); 
+sicaklik_yolla(n,s); //Sýcaklýk yolla fonksiyonuna deðerleri yoluyoruz.
+
+}
+void sicaklik_yolla(float n, float s){ 
+Serial.println(String("AT+CIPSTART=\"TCP\",\"") + IP + "\",80"); //TCP baðlantýsýný baþlatýyoruz.
+delay(2000);
+if(Serial.find("Error")){  
+Serial.println("AT+CIPSTART Error");
+Serial.println("AT+RST");
+asm volatile ("  jmp 0"); //Arduino resetlenir
+delay(1000);
+}
+String yollanacakkomut = "GET /public_html/deneme.php?"; //Get methoduyla sitedeki writer.php dosyasýna veri göndereceðiz
+yollanacakkomut += "&s="; 
+yollanacakkomut += (String(s)); //Stringe dönüþtürüp yolluyoruz
+yollanacakkomut += "&n=";
+yollanacakkomut += (String(n));
+yollanacakkomut += " HTTP/1.1\n";
+yollanacakkomut += ("Host: seniorprojectandroid.tk\n"); //alan adinizi girin
+yollanacakkomut += ("User-Agent: Arduino\n");
+yollanacakkomut += "\r\n\r\n";                                                                                                                        
+Serial.print("AT+CIPSEND="); //veri göndermeye baþlýyoruz.                  
+Serial.println(yollanacakkomut.length()+2); //gönderilecek veri boyutunu giriyoruz.     
+delay(4000);
+
+if(Serial.find(">")){ //> iþareti gelirse veriyi yazýyoruz  
+Serial.println("baþarý");                        
+Serial.print(yollanacakkomut);
+Serial.print("\r\n\r\n");
+}
+else{
+Serial.println("AT+CIPCLOSE");
+Serial.println("AT+RST");
+Serial.println("anladým");
+asm volatile ("  jmp 0"); //veri gönderilmezse arduino resetlenir.
+  delay(1000);
+}
+Serial.println("AT+CIPCLOSE");
+//delay(10000);
+delay(90000); //Sürekli veri göndermemesi için bir süre bekletiyoruz.
+}

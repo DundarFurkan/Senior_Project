@@ -1,0 +1,30 @@
+'bugday		[8 10 15]		[58 61 63]
+'nht		[15 18 26]		[10 20 30]
+pamuk  		[19 22 32]		[70 75 80]
+'arpa		[5 18 20]		[60 70 80]
+'mısır		[15 24 32]		[20 30 40]
+'domates		[14 19 26]		[60 65 70]
+'biber'		[18 24 26]		[10 15 20]
+'patates		[-1 2 10]		[43 53 63]
+'sogan		[21 24 27]		,[40 50 55]
+
+bugday		[0 1 2]
+nohut		[1 2 3]
+arpa		[2 3 4]
+mısır		[3 4 5]
+domates		[4 5 6]
+biber		[5 6 7]
+patates		[6 7 8]
+sogan		[7 8 9]
+pamuk		[8 9 10]
+bugday-patates-arpa	output 0-1-2
+nohut-biber		output 1-2-3
+arpa-bugday-domates	output 2-3-4
+mısır-nohut-sogan		output 3-4-5
+domates-arpa		output 4-5-6
+biber-nohut-mısır		output 5-6-7
+patates-bugday		output 6-7-8
+sogan			output 7-8-9
+pamuk-arpa-domates	output 8-9-10
+
+
